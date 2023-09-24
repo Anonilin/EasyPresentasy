@@ -1,8 +1,10 @@
 from PyQt5 import QtWidgets, QtCore
 from PyQt5 import uic
-from tkinter.messagebox import showerror
+from tkinter.messagebox import showerror,showinfo
 import sys
-import ui
+import ui # file with GUI
+import generator # file for generate pptx file
+from pptx import Presentation
 
 class slide():
     def __init__(self):
@@ -24,6 +26,8 @@ class Window(QtWidgets.QMainWindow, ui.Ui_MainWindow):
         
         self.mainWindowFrame = self.centralWidget
         self.slidesWindowFrame = self.SlideList
+
+        self.saveBtn.clicked.connect(self.saveFile)
 
     def addSlide(self):
         print('Add')
@@ -71,6 +75,10 @@ class Window(QtWidgets.QMainWindow, ui.Ui_MainWindow):
         currentSlide.text = self.textEdit.toPlainText()
         print("Saved")
         #print(self.slideList[x].title for x in range(len(self.slideList)+1))
+    
+    def saveFile(self):
+        fileName = self.fileNameEdit.text()
+        generator.generate(self.slideList, fileName)
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
