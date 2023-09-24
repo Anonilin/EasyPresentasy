@@ -5,13 +5,14 @@ import sys
 import ui
 
 class slide():
-    title="Title"
-    subtitle="Subtitle"
-    text = "Text"
-    img1 = "image"
-    img2 = "image_2"
-    style = 0
-    id = 0
+    def __init__(self):
+        self.title="Title"
+        self.subtitle="Subtitle"
+        self.text = "Text"
+        self.img1 = "image"
+        self.img2 = "image_2"
+        self.style = 0
+        self.id = 0
 
 class Window(QtWidgets.QMainWindow, ui.Ui_MainWindow):
     def __init__(self):
@@ -26,7 +27,7 @@ class Window(QtWidgets.QMainWindow, ui.Ui_MainWindow):
 
     def addSlide(self):
         print('Add')
-        self.slideList.append(slide)
+        self.slideList.append(slide())
         return self.refreshSlideList()
     
     def removeSlide(self):
@@ -49,17 +50,18 @@ class Window(QtWidgets.QMainWindow, ui.Ui_MainWindow):
             self.slideBtn.setObjectName(f"slide_{i}")
             self.slideBtn.setText(f"Slide {i+1}")
             self.slideBtn.clicked.connect(lambda checked, button=self.slideBtn, i=i: self.loadSlideData(i))
-            self.pushButton.clicked.connect(lambda checked, button=self.pushButton, i=i: self.saveSlideData(i)) # Save Slide Data
             self.slideBtn.show()
     
     def loadSlideData(self, index):
         print(index)
+        self.pushButton.disconnect() # Save Slide Data
         currentSlide = self.slideList[index]
         self.titleEdit.setText(currentSlide.title)
         self.subtitleEdit.setText(currentSlide.subtitle)
         self.textEdit.setText(currentSlide.text)
+        self.pushButton.clicked.connect(lambda checked, index=index: self.saveSlideData(index)) # Save Slide Data
 
-        print(currentSlide.title, currentSlide.subtitle, currentSlide.text)
+        #print(currentSlide.title, currentSlide.subtitle, currentSlide.text)
     
     def saveSlideData(self, index):
         currentSlide = self.slideList[index]
@@ -67,6 +69,8 @@ class Window(QtWidgets.QMainWindow, ui.Ui_MainWindow):
         currentSlide.title = self.titleEdit.text()
         currentSlide.subtitle = self.subtitleEdit.text()
         currentSlide.text = self.textEdit.toPlainText()
+        print("Saved")
+        #print(self.slideList[x].title for x in range(len(self.slideList)+1))
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
