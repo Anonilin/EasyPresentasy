@@ -1,24 +1,23 @@
 from PyQt5 import QtWidgets, QtCore
 from PyQt5 import uic
 from tkinter.messagebox import showerror,showinfo
-import sys
+import sys, os
 import ui # file with GUI
 import generator # file for generate pptx file
-from pptx import Presentation
 
 class slide():
     def __init__(self):
         self.title="Title"
         self.subtitle="Subtitle"
         self.text = "Text"
-        self.img1 = "image"
-        self.img2 = "image_2"
-        self.style = 0
+        self.img1 = ''
+        self.img2 = ''
         self.id = 0
 
 class Window(QtWidgets.QMainWindow, ui.Ui_MainWindow):
     def __init__(self):
         super().__init__()
+
         self.setupUi(self)
         self.slideList = []
         self.addBtn.clicked.connect(self.addSlide)
@@ -28,6 +27,10 @@ class Window(QtWidgets.QMainWindow, ui.Ui_MainWindow):
         self.slidesWindowFrame = self.SlideList
 
         self.saveBtn.clicked.connect(self.saveFile)
+        
+        self.styleBox.addItems([style for style in os.listdir('Styles')])
+        self.styleBox.activated[str].connect(generator.changeStyle)
+        
 
     def addSlide(self):
         print('Add')
@@ -55,7 +58,7 @@ class Window(QtWidgets.QMainWindow, ui.Ui_MainWindow):
             self.slideBtn.setText(f"Slide {i+1}")
             self.slideBtn.clicked.connect(lambda checked, button=self.slideBtn, i=i: self.loadSlideData(i))
             self.slideBtn.show()
-    
+
     def loadSlideData(self, index):
         print(index)
         self.pushButton.disconnect() # Save Slide Data
@@ -78,7 +81,10 @@ class Window(QtWidgets.QMainWindow, ui.Ui_MainWindow):
     
     def saveFile(self):
         fileName = self.fileNameEdit.text()
-        generator.generate(self.slideList, fileName)
+        if(fileName == ''):
+            generator.generate(self.slideList)
+        else:
+            generator.generate(self.slideList, fileName)
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
